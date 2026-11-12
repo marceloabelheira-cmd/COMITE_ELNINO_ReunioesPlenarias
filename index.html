@@ -377,6 +377,38 @@
   .ata hr.ata-sig + p, .ata hr.ata-sig + p + p, .ata hr.ata-sig + p + p + p{ text-align:center; margin:0; font-size:13px; }
   .ata p:has(+ hr.ata-sig){ text-align:center; }
 
+  .hero2{ display:flex; align-items:center; gap:18px; padding:6px 0 4px; }
+  .hero2 .seal{ display:flex; background:#fff; border:1px solid var(--gray-200); border-radius:12px; padding:8px 14px; box-shadow:var(--shadow); flex-shrink:0; }
+  .hero2 .seal img{ height:34px; width:auto; display:block; }
+  .hero2 .h2t{ flex:1; min-width:0; }
+  .hero2 .hero-eyebrow{ font-size:11px; margin:0 0 2px; color:var(--orange-600); }
+  .hero2 h2{ font-size:22px; color:var(--blue-900); margin:0; font-weight:800; line-height:1.2; }
+  .hero2 .sub{ margin:3px 0 0; font-size:13px; color:var(--gray-600); line-height:1.45; }
+  .hero2 .searchbox{ margin:0; width:330px; flex-shrink:0; }
+  .hero2 .searchbox input{ padding:10px 14px 10px 40px; font-size:13.5px; }
+  .viewbar{ display:flex; align-items:center; gap:12px; margin:16px 0 14px; padding-top:14px; border-top:1px solid var(--gray-200); flex-wrap:wrap; }
+  .viewbar .vl{ font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--gray-400); }
+  .viewbar .seg button{ display:inline-flex; align-items:center; gap:6px; }
+  .viewbar .seg svg{ width:13px; height:13px; }
+  .filters{ display:flex; flex-direction:column; gap:8px; margin:0 0 16px; }
+  .frow{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+  .fl2{ font-size:10.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--gray-400); width:70px; flex-shrink:0; }
+  .frow .fchip{ padding:5px 11px; font-size:12px; }
+  .pgroup{ margin-bottom:22px; }
+  .pghead{ display:flex; align-items:center; gap:10px; margin:0 0 10px; font-size:13px; color:var(--gray-600); }
+  .pghead > b:last-child{ margin-left:auto; font-size:12px; background:var(--gray-100); color:var(--gray-800); padding:2px 9px; border-radius:999px; }
+  .pghead .cticon{ width:26px; height:26px; border-radius:7px; background:var(--blue-100); color:var(--blue-700); display:flex; align-items:center; justify-content:center; }
+  .pghead .cticon svg{ width:14px; height:14px; }
+  .pghead span b{ color:var(--blue-900); }
+  .badge.pb-p1{ background:var(--blue-100); color:var(--blue-700); }
+  .badge.pb-p2{ background:var(--orange-100); color:var(--orange-600); }
+  .cat-card{ border-top:4px solid var(--cc); }
+  .cat-card .cat-top{ display:flex; align-items:center; justify-content:space-between; }
+  .cat-card .ti{ width:38px; height:38px; border-radius:10px; background:var(--cb); color:var(--cc); display:flex; align-items:center; justify-content:center; }
+  .cat-card .ti svg{ width:20px; height:20px; }
+  .cat-card .cn{ font-size:28px; font-weight:800; color:var(--cc); line-height:1; }
+  .cat-card:hover{ border-color:var(--cc); border-top-color:var(--cc); }
+
   .event-link{
     display:flex; align-items:center; gap:14px; margin-top:22px; text-decoration:none; color:inherit;
     border:1px dashed var(--gray-200); border-radius:var(--radius); padding:10px 16px 10px 10px; background:var(--gray-100);
@@ -506,6 +538,12 @@
     .capa .zoom{ width:22px; height:22px; right:5px; bottom:5px; }
     .ptable .hide-m{ display:none; }
     .event-link .go span{ display:none; }
+    .hero2{ flex-wrap:wrap; gap:12px; }
+    .hero2 .seal img{ height:28px; } .hero2 h2{ font-size:19px; } .hero2 .sub{ display:none; }
+    .hero2 .searchbox{ width:100%; }
+    .viewbar .vl{ display:none; } .viewbar .seg{ width:100%; } .viewbar .seg button{ flex:1; justify-content:center; padding:9px 6px; font-size:12px; }
+    .viewbar .seg svg{ display:none; }
+    .fl2{ width:100%; }
     .feat{ flex-wrap:wrap; padding:18px; gap:14px; } .feat img{ width:64px; height:64px; } .feat h3{ font-size:17px; } .feat .btn{ width:100%; justify-content:center; }
     .pres-card{ flex-wrap:wrap; } .pres-card .go{ margin-left:58px; }
   }
@@ -800,8 +838,17 @@ function parseHash(){
   const [path, qs] = h.split('?');
   return { parts: (path || '').split('/').filter(Boolean), path: path || '', q: new URLSearchParams(qs || '') };
 }
+const NAV = [];
+function trackNav(){
+  const h = location.hash || '#/';
+  if (NAV.length > 1 && NAV[NAV.length - 2] === h) NAV.pop();
+  else if (NAV[NAV.length - 1] !== h) NAV.push(h);
+}
 function goUp(){
+  if (NAV.length > 1) { history.back(); return; }
   const { parts } = parseHash();
+  if (parts[0] === 'ct') { go('', {v:'ct'}); return; }
+  if (parts[0] === 'acoes') { go('', {v:'acao'}); return; }
   if (parts[0] === 'busca') { history.length > 1 ? history.back() : go(''); return; }
   parts.pop();
   if (parts.length === 2 && parts[1].startsWith('ct-')) { /* ok */ }
@@ -809,17 +856,29 @@ function goUp(){
 }
 
 function route(){
+  trackNav();
   const r = parseHash();
   const [pid, a, b] = r.parts;
   let crumbs = [{ label:'Início', path:'' }];
   let html = '';
   try {
-    if (!pid) { html = homeScreen(); }
+    if (!pid) { html = homeScreen(r.q); }
     else if (EVENTOS.some(e => e.id === pid)) {
       const e = plen(pid);
       crumbs.push({ label: e.titulo, path: pid });
       if (a === 'inscritos') { crumbs.push({ label: pcfg(e).label }); html = presencaScreen(e); }
       else html = eventoScreen(e);
+    }
+    else if (pid === 'ct' && a && CT_LIST().some(c => c.num === a)) {
+      const info = CT_LIST().find(c => c.num === a);
+      crumbs.push({ label:'Por Câmara Técnica', path:'?v=ct' });
+      crumbs.push({ label:`Câmara Técnica ${a}` });
+      html = ctAcrossScreen(info, r.q);
+    }
+    else if (pid === 'acoes' && a && CAT[a]) {
+      crumbs.push({ label:'Por tipo de ação', path:'?v=acao' });
+      crumbs.push({ label: CAT[a].label });
+      html = acoesScreen(a, r.q);
     }
     else if (pid === 'produtos') { crumbs.push({ label:'Outros produtos' }); html = produtosScreen(); }
     else if (pid === 'busca') { crumbs.push({ label:'Busca' }); html = searchScreen(r.q.get('q') || '', r.q.get('p') || ''); }
@@ -869,7 +928,9 @@ function afterRender(r){
     si.addEventListener('input', debounce(() => {
       const val = si.value;
       const { parts, q } = parseHash();
-      if (parts[0] === 'busca') { history.replaceState(null, '', '#/busca?' + new URLSearchParams({ q: val, p: q.get('p') || '' })); renderResults(val, q.get('p') || ''); }
+      if (parts[0] === 'ct') { go('', {v:'ct'}); return; }
+  if (parts[0] === 'acoes') { go('', {v:'acao'}); return; }
+  if (parts[0] === 'busca') { history.replaceState(null, '', '#/busca?' + new URLSearchParams({ q: val, p: q.get('p') || '' })); renderResults(val, q.get('p') || ''); }
     }, 160));
     si.addEventListener('keydown', e => {
       if (e.key === 'Enter' && parseHash().parts[0] !== 'busca') go('busca', { q: si.value });
@@ -887,23 +948,37 @@ function afterRender(r){
 function debounce(fn, ms){ let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
 
 /* ---------- Tela inicial ---------- */
-function homeScreen(){
+function homeScreen(q){
+  const view = (q && q.get('v')) || 'plenaria';
   const realizadas = PLENARIAS.filter(p => p.status === 'realizada');
   const nAprov = realizadas.reduce((a, p) => a + aprovadas(p.id).length, 0);
   const ultima = realizadas[realizadas.length - 1];
   const nCT = (RELATORIOS[ultima.id] || []).length;
   const proxima = PLENARIAS.find(p => p.status === 'prevista');
   return `
-    <section class="hero">
+    <section class="hero2">
       <div class="seal"><img src="${ELNINO_LOGO}" alt="Comitê Estadual de Enfrentamento aos Efeitos do El Niño"></div>
-      <div class="hero-accent"></div>
-      <div class="hero-eyebrow">Defesa Civil RJ · Comitê Estadual El Niño</div>
-      <h2>Reuniões Plenárias</h2>
-      <p class="sub">O que cada Câmara Técnica do Comitê Estadual de Enfrentamento aos Efeitos do El Niño realizou, tem em andamento e programou, além das matérias levadas à deliberação do Plenário, conforme os Relatórios Consolidados de cada reunião.</p>
+      <div class="h2t">
+        <div class="hero-eyebrow">Defesa Civil RJ · Comitê Estadual El Niño</div>
+        <h2>Reuniões Plenárias</h2>
+        <p class="sub">Ações das Câmaras Técnicas e deliberações do Plenário, conforme os Relatórios Consolidados de cada reunião.</p>
+      </div>
       <div class="searchbox">${icon('search')}<input id="searchInput" type="search" placeholder="Buscar ações, órgãos, temas… (Enter)" aria-label="Buscar nos relatórios"></div>
     </section>
 
-    <div class="subhead">Plenárias</div>
+    <div class="viewbar">
+      <span class="vl">Navegar por</span>
+      <div class="seg" role="tablist" aria-label="Modo de navegação">
+        ${[['plenaria','Plenária','calendar'],['ct','Câmara Técnica','layers'],['acao','Tipo de ação','check']].map(([k, l, ic]) =>
+          `<button class="${view === k ? 'on' : ''}" role="tab" aria-selected="${view === k}" onclick="go('', ${k === 'plenaria' ? 'null' : `{v:'${k}'}`})">${icon(ic)}<span>${l}</span></button>`).join('')}
+      </div>
+    </div>
+    ${view === 'ct' ? homeCT() : view === 'acao' ? homeAcoes() : homePlen()}
+  `;
+}
+
+function homePlen(){
+  return `
     <div class="grid">${PLENARIAS.map(plenCard).join('')}</div>
     ${EVENTOS.map(e => `
     <a class="event-link" href="#/${e.id}">
@@ -1224,6 +1299,149 @@ function ataScreen(p){
       <button class="compare" onclick="window.print()">${icon('print')} Imprimir</button>
     </div>
     <article class="ata">${a.html}</article>`;
+}
+
+/* ---------- Visões transversais: por Câmara Técnica e por tipo de ação ---------- */
+function plensComRelatorio(){ return PLENARIAS.filter(p => RELATORIOS[p.id]); }
+function CT_LIST(){
+  // une as CTs de todas as Plenárias; usa título/eixos da Plenária mais recente em que aparece
+  const map = new Map();
+  plensComRelatorio().forEach(p => RELATORIOS[p.id].forEach(ct => {
+    const cur = map.get(ct.num) || { num: ct.num, plens: [], eixos: new Map() };
+    cur.titulo = ct.titulo; cur.ref = ct; cur.plens.push(p);
+    ct.eixos.forEach(e => cur.eixos.set(e.num, e.titulo));
+    map.set(ct.num, cur);
+  }));
+  const ord = ['I','II','III','IV','V','VI','VII','VIII'];
+  return [...map.values()].sort((a, b) => ord.indexOf(a.num) - ord.indexOf(b.num));
+}
+function entries(){ if (!INDEX) buildIndex(); return INDEX; }
+function countBy(list){ const o = {}; CATS.forEach(c => o[c.k] = 0); list.forEach(e => o[e.c.k]++); return o; }
+function chip(label, on, onclick){ return `<button class="fchip ${on ? 'on' : ''}" onclick="${onclick}">${label}</button>`; }
+function qset(path, q, k, v){ const o = Object.fromEntries(q.entries()); if (v === '' || v == null) delete o[k]; else o[k] = v; delete o.i; return `go('${path}', ${JSON.stringify(o).replace(/"/g, "'")})`; }
+
+function homeCT(){
+  const all = entries();
+  return `<div class="grid">${CT_LIST().map(c => {
+    const es = all.filter(e => e.ct.num === c.num);
+    const cnt = countBy(es);
+    const coord = infoGet(c.ref, ['Órgão Coordenador','Secretaria Coordenadora','Coordenador']);
+    return `
+      <a class="card ${c.num === 'III' ? 'orange' : ''}" href="#/ct/${c.num}">
+        <div style="display:flex;gap:12px;align-items:center"><div class="icon">${icon(CT_ICON[c.num]||'layers')}</div>
+          <div style="min-width:0"><div class="card-kicker">Câmara Técnica ${c.num}</div><h3>${esc(c.titulo)}</h3></div></div>
+        ${coord ? `<p>Coordenação: ${esc(coord)}</p>` : ''}
+        <p>${c.eixos.size ? `<b>${c.eixos.size} eixos</b> · ` : ''}Relatada em: ${c.plens.map(p => p.ordinal).join(' e ')} Plenária${c.plens.length > 1 ? 's' : ''}</p>
+        ${distBar(cnt)}
+        ${distLegend(cnt, ['realizadas','andamento','programadas'])}
+        <div class="go">Ver todas as Plenárias ${icon('chevron')}</div>
+      </a>`;
+  }).join('')}</div>`;
+}
+
+function homeAcoes(){
+  const cnt = countBy(entries());
+  return `<div class="grid cat-grid">${CATS.map(c => `
+    <a class="card cat-card" href="#/acoes/${c.k}" style="--cc:${cv(c)};--cb:${cv(c, 1)}">
+      <div class="cat-top"><span class="ti">${icon(c.icon)}</span><span class="cn">${cnt[c.k]}</span></div>
+      <h3>${c.label}</h3>
+      <p>${plensComRelatorio().map(p => `${p.ordinal} Plenária: <b>${countPlen(p.id)[c.k]}</b>`).join(' · ')}</p>
+      <div class="go">Ver lista ${icon('chevron')}</div>
+    </a>`).join('')}</div>`;
+}
+
+function entryCard(e, where){
+  return `
+    <div class="result" onclick="go('${unitPath(e.p.id, e.ct, e.u)}', {s:'${e.c.k}', i:'${e.i}'})" title="Abrir no relatório da ${esc(e.p.titulo)}">
+      ${where ? `<div class="where">${where}</div>` : ''}
+      ${itemCard(e.it, 'x', e.c).replace('id="item-x"', '')}
+    </div>`;
+}
+const plenBadge = p => `<span class="badge pb-${p.id}">${esc(p.ordinal)} Plenária</span>`;
+
+function ctAcrossScreen(info, q){
+  const path = `ct/${info.num}`;
+  const pf = q.get('p') || '';
+  const ef = q.get('e') || '';
+  let base = entries().filter(e => e.ct.num === info.num && (!ef || (e.u !== e.ct && String(e.u.num) === ef)));
+  const counts = countBy(base.filter(e => !pf || e.p.id === pf));
+  let s = q.get('s'); if (!CAT[s]) s = CATS.find(c => counts[c.k])?.k || 'realizadas';
+  const cat = CAT[s];
+  const list = base.filter(e => e.c.k === s && (!pf || e.p.id === pf));
+  const plens = info.plens.slice().reverse(); // mais recente primeiro
+  const coord = infoGet(info.ref, ['Órgão Coordenador','Secretaria Coordenadora','Coordenador']);
+  const eixoName = n => info.eixos.get(Number(n));
+  return `
+    <div class="eyebrow2">Câmara Técnica ${info.num} · todas as Plenárias</div>
+    <div class="section-title">${esc(info.titulo)}</div>
+    ${coord ? `<p class="section-desc">Coordenação: ${esc(coord)}</p>` : ''}
+
+    <div class="filters">
+      ${info.eixos.size ? `<div class="frow"><span class="fl2">Eixo</span>
+        ${chip('Todos', !ef, qset(path, q, 'e', ''))}
+        ${[...info.eixos.entries()].map(([n, t]) => chip(`${n} · ${esc(t)}`, ef === String(n), qset(path, q, 'e', String(n)))).join('')}</div>` : ''}
+      <div class="frow"><span class="fl2">Plenária</span>
+        ${chip('Todas', !pf, qset(path, q, 'p', ''))}
+        ${info.plens.map(p => chip(`${p.ordinal} · ${parseDate(p.data).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}`, pf === p.id, qset(path, q, 'p', p.id))).join('')}</div>
+    </div>
+
+    ${catTabs(counts, s, k => qset(path, q, 's', k))}
+
+    <div class="cat-head"><h3 style="color:${cv(cat)}">${cat.label}</h3>
+      <span class="count" style="background:${cv(cat, 1)};color:${cv(cat)}">${list.length}</span></div>
+    ${list.length ? plens.filter(p => !pf || p.id === pf).map(p => {
+      const lp = list.filter(e => e.p.id === p.id);
+      if (!lp.length) return '';
+      return `<div class="pgroup"><div class="pghead">${plenBadge(p)}<span>${dataLonga(p.data)}</span><b>${lp.length}</b></div>
+        <div class="items">${lp.map(e => entryCard(e, e.u !== e.ct && !ef ? `<span>Eixo ${e.u.num} — ${esc(e.u.titulo)}</span>` : '')).join('')}</div></div>`;
+    }).join('') : `<div class="note">Sem registros nesta categoria${pf ? ' nesta Plenária' : ''}.</div>`}
+    <p class="section-desc" style="margin-top:14px;font-size:12.5px">Clique em um item para abri-lo no relatório da Plenária correspondente.</p>
+  `;
+}
+
+function acoesScreen(k, q){
+  const path = `acoes/${k}`;
+  const pf = q.get('p') || '', cf = q.get('ct') || '';
+  const cat = CAT[k];
+  const all = entries();
+  const scope = all.filter(e => (!pf || e.p.id === pf) && (!cf || e.ct.num === cf));
+  const counts = countBy(scope);
+  const list = scope.filter(e => e.c.k === k);
+  const cts = CT_LIST();
+  return `
+    <div class="eyebrow2">Por tipo de ação · todas as Plenárias</div>
+    <div class="section-title" style="color:${cv(cat)}">${cat.label}</div>
+    <p class="section-desc">${list.length} ${list.length === 1 ? 'registro' : 'registros'}${pf ? ` na ${esc(plen(pf).titulo)}` : ' nas Plenárias realizadas'}${cf ? `, Câmara Técnica ${cf}` : ''}.</p>
+
+    <div class="filters">
+      <div class="frow"><span class="fl2">Plenária</span>
+        ${chip('Todas', !pf, qset(path, q, 'p', ''))}
+        ${plensComRelatorio().map(p => chip(`${p.ordinal} · ${parseDate(p.data).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}`, pf === p.id, qset(path, q, 'p', p.id))).join('')}</div>
+      <div class="frow"><span class="fl2">Câmara</span>
+        ${chip('Todas', !cf, qset(path, q, 'ct', ''))}
+        ${cts.map(c => chip(`CT ${c.num}`, cf === c.num, qset(path, q, 'ct', c.num))).join('')}</div>
+    </div>
+
+    ${catTabs(counts, k, kk => `go('acoes/${kk}', ${JSON.stringify(Object.fromEntries([...q.entries()].filter(([a]) => a !== 'i'))).replace(/"/g, "'")})`)}
+
+    ${list.length ? cts.filter(c => !cf || c.num === cf).map(c => {
+      const lc = list.filter(e => e.ct.num === c.num);
+      if (!lc.length) return '';
+      return `<div class="pgroup"><div class="pghead"><span class="cticon">${icon(CT_ICON[c.num]||'layers')}</span><span><b>Câmara Técnica ${c.num}</b> — ${esc(c.titulo)}</span><b>${lc.length}</b></div>
+        <div class="items">${lc.map(e => entryCard(e, `${plenBadge(e.p)}${e.u !== e.ct ? `<span>Eixo ${e.u.num} — ${esc(e.u.titulo)}</span>` : ''}`)).join('')}</div></div>`;
+    }).join('') : `<div class="note">Sem registros com estes filtros.</div>`}
+  `;
+}
+
+function catTabs(counts, s, clickFor){
+  return `<div class="tabs" role="tablist">${CATS.map(c => `
+      <button class="tab ${c.k === s ? 'on' : ''} ${counts[c.k] ? '' : 'zero'}" role="tab" aria-selected="${c.k === s}"
+        style="--tabc:${cv(c)};${c.k === s ? `border-color:${cv(c)};background:${cv(c, 1)}` : ''}"
+        onclick="${clickFor(c.k)}">
+        <span class="ti" style="background:${cv(c, 1)};color:${cv(c)}">${icon(c.icon)}</span>
+        <span class="tn">${counts[c.k]}</span>
+        <span class="tl">${c.short}</span>
+      </button>`).join('')}</div>`;
 }
 
 /* ---------- Outros produtos ---------- */
