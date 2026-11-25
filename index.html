@@ -469,6 +469,20 @@
   .feat .btn:hover{ filter:brightness(1.08); }
   .feat .btn svg{ width:14px; height:14px; }
   .feat .btn.off{ background:rgba(255,255,255,.14); box-shadow:none; color:rgba(255,255,255,.75); cursor:default; }
+  .prod-grid.cols-1{ grid-template-columns:1fr; }
+  .prod-grid.cols-2{ grid-template-columns:repeat(2, 1fr); }
+  .prod-grid.cols-3{ grid-template-columns:repeat(3, 1fr); }
+  .prod-card.wide{ flex-direction:row; align-items:center; gap:18px; }
+  .prod-card.wide > div:first-child{ flex-shrink:0; }
+  .prod-card.wide p{ flex:1; }
+  .prod-card.wide .go{ margin-top:0; padding-top:0; }
+  .prodlink{
+    display:inline-flex; align-items:center; gap:7px; height:30px; padding:0 13px; border-radius:999px; cursor:pointer;
+    background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.3); color:#fff; font:inherit; font-size:12.5px; font-weight:700; white-space:nowrap;
+    transition: background-color .15s ease, border-color .15s ease;
+  }
+  .prodlink:hover{ background: rgba(255,255,255,.22); border-color: rgba(255,255,255,.5); }
+  .prodlink svg{ width:14px; height:14px; }
   .prod-card .icon img{ width:100%; height:100%; object-fit:cover; border-radius:11px; }
 
   .plen-thumb{ height:120px; overflow:hidden; border-bottom:1px solid var(--gray-200); }
@@ -559,6 +573,9 @@
     .capa .zoom{ width:22px; height:22px; right:5px; bottom:5px; }
     .ptable .hide-m{ display:none; }
     .event-link .go span{ display:none; }
+    .prodlink{ width:30px; padding:0; justify-content:center; } .prodlink span{ display:none; }
+    .prod-grid.cols-2, .prod-grid.cols-3{ grid-template-columns:1fr; }
+    .prod-card.wide{ flex-direction:column; align-items:stretch; gap:10px; }
     .hero2{ flex-wrap:wrap; gap:12px; }
     .hero2 .seal img{ height:28px; } .hero2 h2{ font-size:19px; } .hero2 .sub{ display:none; }
     .hero2 .searchbox{ width:100%; }
@@ -596,7 +613,7 @@
     <div class="gov-id">Governo do Estado<span class="full">&nbsp;do Rio de Janeiro</span></div>
     <span class="committee-chip"><img id="institLogo" alt="Comitê Estadual de Enfrentamento aos Efeitos do El Niño"></span>
     <span class="divider"></span>
-    <button class="icon-btn subtle" onclick="go('produtos')" aria-label="Outros produtos" title="Outros produtos" id="prodBtn"></button>
+    <button class="prodlink" onclick="go('produtos')" aria-label="Outros produtos" title="Outros painéis e sites da SEDEC-RJ" id="prodBtn"></button>
     <button class="icon-btn" onclick="go('busca')" aria-label="Buscar" title="Buscar nos relatórios" id="searchBtn"></button>
     <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" aria-label="Alternar tema claro/escuro" title="Alternar tema"></button>
   </div>
@@ -720,18 +737,14 @@ const FE_LOGO = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwMD
 const PRODUTOS = [
   { titulo: 'Painel Integrado — Força Especializada da SEDEC‑RJ', descricao: 'Painel integrado da Força Especializada da Defesa Civil (FE-SEDEC).',
     url: null, categoria: 'Destaque', destaque: true, logo: FE_LOGO },
-  {"titulo": "Portal El Niño — versão Comitê", "descricao": "Portal do Comitê Estadual de Enfrentamento aos Efeitos do El Niño (versão interna do Comitê).", "url": "https://marceloabelheira-cmd.github.io/COMITE_ELNINO_PORTAL/", "categoria": "Comitê El Niño"},
-  {"titulo": "Portal El Niño — versão pública", "descricao": "Versão aberta ao público do Portal El Niño.", "url": "https://marceloabelheira-cmd.github.io/COMITE_ELNINO_PORTAL_versaopublica/", "categoria": "Comitê El Niño"},
-  {"titulo": "PLANCON Animais (2026)", "descricao": "Plano de Contingência para Animais — resumo prático.", "url": "https://marceloabelheira-cmd.github.io/PLANCON_animais_PlanoPratico/", "categoria": "Planos de Contingência"},
-  {"titulo": "PLANCON SEIF (2026)", "descricao": "Plano de Contingência para Secas, Estiagens e Incêndios Florestais.", "url": "https://marceloabelheira-cmd.github.io/PLANCON_IF_2026/", "categoria": "Planos de Contingência"},
-  {"titulo": "Painel de Chuvas — a partir de outubro de 2026", "descricao": "Municípios com impactos significativos (Matriz ICR).", "url": "https://marceloabelheira-cmd.github.io/PAINEL_CHUVAS_RJ_visaogeral/", "categoria": "Chuvas"},
-  {"titulo": "Chuvas nov/25 a abr/26 — Impactos Significativos", "descricao": "Municípios com impactos significativos (Matriz ICR).", "url": "https://marceloabelheira-cmd.github.io/ESCALAv4/", "categoria": "Chuvas"},
-  {"titulo": "Chuvas nov/25 a abr/26 — Situação de Emergência e Ajuda Humanitária", "descricao": "Municípios com Situação de Emergência e/ou ajuda humanitária.", "url": "https://marceloabelheira-cmd.github.io/PAINEL_SEeAJUDAHUMANITARIA_chuvas2025.2026/", "categoria": "Chuvas"},
-  {"titulo": "Incêndios Florestais 2025 e 2026", "descricao": "Quantitativo por dia e eventos significativos (Matriz ICR).", "url": "https://marceloabelheira-cmd.github.io/IF2025/#2026", "categoria": "Incêndios Florestais"},
-  {"titulo": "Incêndios Florestais — GIGR 2025", "descricao": "Quantitativo por dia e eventos significativos (Matriz ICR).", "url": "https://marceloabelheira-cmd.github.io/IF_somenteem2025/", "categoria": "Incêndios Florestais"},
-  {"titulo": "Ações Preventivas — Histórico", "descricao": "Histórico das ações preventivas: Incêndios Florestais (GIGR 2025) e Chuvas.", "url": "https://marceloabelheira-cmd.github.io/SEDEC_acoesdeprevencao.preparacao_GRAC.e.outros/", "categoria": "Outros painéis"},
-  {"titulo": "Excesso de Calor — Impactos Significativos", "descricao": "Municípios com impactos significativos (Matriz ICR) — em estudo.", "url": "https://marceloabelheira-cmd.github.io/PAINEL_EXCESSODECALOR_MatrizICR/", "categoria": "Outros painéis"},
-  {"titulo": "Desastres Tecnológicos — Município do Rio de Janeiro (2011 a 2025)", "descricao": "Eventos significativos (Matriz ICR).", "url": "https://marceloabelheira-cmd.github.io/MATRIZICR_desastrestecnologicosRio_dashboard/", "categoria": "Outros painéis"}
+  {"titulo": "Portal El Niño", "descricao": "Portal do Comitê Estadual de Enfrentamento aos Efeitos do El Niño.", "url": "https://marceloabelheira-cmd.github.io/COMITE_ELNINO_PORTAL_versaopublica/", "categoria": "Comitê El Niño"},
+  {"titulo": "PLANCON Animais (2026)", "descricao": "Plano de Contingência para Animais — resumo prático.", "url": "https://marceloabelheira-cmd.github.io/PLANCON_animais_PlanoPratico/", "categoria": "Planos e Guia"},
+  {"titulo": "PLANCON SEIF (2026)", "descricao": "Plano de Contingência para Secas, Estiagens e Incêndios Florestais.", "url": "https://marceloabelheira-cmd.github.io/PLANCON_IF_2026/", "categoria": "Planos e Guia"},
+  {"titulo": "PLANCON Chuvas Intensas 2026/2027", "descricao": "Plano de Contingência para Chuvas Intensas — período 2026/2027.", "url": "https://marceloabelheira-cmd.github.io/PLANCON_CHUVAS_2026.2027/", "categoria": "Planos e Guia"},
+  {"titulo": "Guia de Enfrentamento ao Calor Extremo", "descricao": "Guia para os municípios: mitigação dos impactos do calor extremo no Estado do RJ.", "url": "https://marceloabelheira-cmd.github.io/EXCESSODECALOR_guia_mitigacaodeimpactos_RJ/", "categoria": "Planos e Guia"},
+  {"titulo": "Painel de Chuvas — a partir de outubro de 2026", "descricao": "Municípios com impactos significativos (Matriz ICR).", "url": "https://marceloabelheira-cmd.github.io/PAINEL_CHUVAS_RJ_visaogeral/", "categoria": "Painéis"},
+  {"titulo": "Incêndios Florestais 2025 e 2026", "descricao": "Quantitativo por dia e eventos significativos (Matriz ICR).", "url": "https://marceloabelheira-cmd.github.io/IF2025/#2026", "categoria": "Painéis"},
+  {"titulo": "Ações Preventivas — Histórico", "descricao": "Histórico das ações preventivas: Incêndios Florestais (GIGR 2025) e Chuvas.", "url": "https://marceloabelheira-cmd.github.io/SEDEC_acoesdeprevencao.preparacao_GRAC.e.outros/", "categoria": "Painéis"},
 ];
 
 /* Atas das reuniões: texto para leitura no site + PDF para baixar (gerados a partir dos .docx) */
@@ -794,7 +807,7 @@ const ICONS = {
 };
 function icon(n, sw){ return `<svg viewBox="0 0 24 24" stroke-width="${sw||2}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]||''}</svg>`; }
 document.getElementById('searchBtn').innerHTML = icon('search');
-document.getElementById('prodBtn').innerHTML = icon('apps');
+document.getElementById('prodBtn').innerHTML = icon('apps') + '<span>Outros produtos</span>';
 
 /* ---------- Tema ---------- */
 let currentTheme = 'light';
@@ -1522,15 +1535,17 @@ function produtosScreen(){
         <div class="ft"><div class="k">Em destaque</div><h3>${esc(f.titulo)}</h3>${f.descricao ? `<p>${esc(f.descricao)}</p>` : ''}</div>
         ${f.url ? `<a class="btn" href="${esc(f.url)}" target="_blank" rel="noopener">Abrir painel ${icon('external')}</a>` : `<span class="btn off">Link em breve</span>`}
       </div>`).join('')}
-    ${rest.length ? cats.map(c => `
+    ${rest.length ? cats.map(c => { const items = rest.filter(p => (p.categoria || 'Outros') === c);
+      const cols = items.length === 1 ? 1 : (items.length % 2 === 0 ? 2 : 3);
+      return `
       <div class="subhead">${esc(c)}</div>
-      <div class="grid">${rest.filter(p => (p.categoria || 'Outros') === c).map(p => `
-        <a class="card prod-card" href="${esc(p.url)}" target="_blank" rel="noopener">
-          <div style="display:flex;gap:12px;align-items:center"><div class="icon">${p.logo ? `<img src="${p.logo}" alt="">` : icon(({'Comitê El Niño':'sun','Planos de Contingência':'doc','Chuvas':'water','Incêndios Florestais':'fire'})[p.categoria] || 'layers')}</div>
+      <div class="grid prod-grid cols-${cols}">${items.map(p => `
+        <a class="card prod-card${cols === 1 ? ' wide' : ''}" href="${esc(p.url)}" target="_blank" rel="noopener">
+          <div style="display:flex;gap:12px;align-items:center"><div class="icon">${p.logo ? `<img src="${p.logo}" alt="">` : icon(/Chuvas/.test(p.titulo) ? 'water' : /Incêndios/.test(p.titulo) ? 'fire' : /Calor|El Niño/.test(p.titulo) ? 'sun' : /Preventivas/.test(p.titulo) ? 'check' : ({'Planos e Guia':'doc'})[p.categoria] || 'layers')}</div>
             <h3>${esc(p.titulo)}</h3></div>
           ${p.descricao ? `<p>${esc(p.descricao)}</p>` : ''}
           <div class="go">Abrir ${icon('external')}</div>
-        </a>`).join('')}</div>`).join('')
+        </a>`).join('')}</div>`; }).join('')
     : `<div class="empty">${icon('apps')}<span>A lista dos demais produtos será adicionada em breve.</span></div>`}
   `;
 }
